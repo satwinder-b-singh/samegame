@@ -1,0 +1,12 @@
+%cella(X, Y, ColoriVicini).
+
+%	 LA STESSA CELLA NON DEVE AVERE VALORI DIVERSI.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+scelgo(X, Y)|nonScelgo(X, Y):- cella(X, Y,V).
+%:- #count{M:scelgo(M,_)}<1.
+
+maxColori(X1,Y1,MAX) :- #max{N:cella(X, Y, N)} = MAX , scelgo(X1, Y1), cella(X1, Y1, MAX).
+:- nonScelgo(X,Y),maxColori(X,Y,_).
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%:- scelgo(X,Y), cella(X,Y,V), cella(X,Y,V1), V<>V1.
+%:- scelgo(X,Y) , cella(X,Y,V) ,maxColori(X1,Y1,MAX) , V<MAX, X<>X1 , Y1<>Y. 
+%:~ scelgo (X, Y), cella(X, Y, VALUE).  [1@2]
