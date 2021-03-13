@@ -1,7 +1,5 @@
 package samegame.model;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -9,6 +7,7 @@ import it.unical.mat.embasp.base.Handler;
 import it.unical.mat.embasp.base.InputProgram;
 import it.unical.mat.embasp.base.Output;
 import it.unical.mat.embasp.languages.asp.ASPInputProgram;
+import it.unical.mat.embasp.languages.asp.AnswerSet;
 import it.unical.mat.embasp.languages.asp.AnswerSets;
 import it.unical.mat.embasp.platforms.desktop.DesktopHandler;
 import it.unical.mat.embasp.specializations.dlv2.desktop.DLV2DesktopService;
@@ -37,26 +36,35 @@ public class GameAi {
         GameAi.handler.addProgram(this.encoding);
     }
 
-    public List<Cella> getAnswerSets() {
-        List<Cella> max = new ArrayList<Cella>();
+    public Risultato getAnswerSets() {
+        Risultato risultato = null;
         Output o = GameAi.getHandler().startSync();
         AnswerSets answersets = (AnswerSets) o;
+        while (answersets.getAnswersets().get(0).getAnswerSet().isEmpty()) {
+            o = GameAi.getHandler().startSync();
+            answersets = (AnswerSets) o;
+        }
         if (answersets.getAnswersets().size() == 0) {
             System.out.println("No answer set");
         }
         else {
-            String answerSetsString = answersets.getAnswerSetsString();
-            System.out.println("Stampo l'answerset  \n" + answerSetsString);
-            Pattern matcher = Pattern.compile(
-                    "maxColori\\((?<firstNumber>[0-9]+),[ \t]*(?<secondNumber>[0-9]+),[ \t]*(?<thirdNumber>[0-9]+)\\)");
-            Matcher m = matcher.matcher(answerSetsString);
 
-            while (m.find()) {
-                max.add(new Cella(Integer.parseInt(m.group(1)), Integer.parseInt(m.group(2)),
-                        Integer.parseInt(m.group(3))));
+            String answerSetsString = answersets.getAnswerSetsString();
+            Pattern pattern = Pattern.compile("^scelgo\\((\\d+),(\\d+)\\)");
+
+            for (AnswerSet an : answersets.getAnswersets()) {
+                Matcher matcher;
+                for (String atom : an.getAnswerSet()) {
+                    matcher = pattern.matcher(atom);
+                    if (matcher.find()) {
+                        Integer i = Integer.valueOf(matcher.group(1));
+                        Integer j = Integer.valueOf(matcher.group(2));
+                        risultato = new Risultato(i, j);
+                    }
+                }
             }
         }
-        return max;
+        return risultato;
     }
 
     public void addFacts(Cella c) {
@@ -64,7 +72,15 @@ public class GameAi {
             this.facts.addObjectInput(c);
         }
         catch (Exception e) {
-            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
+    public void addFacts(Max max) {
+        try {
+            this.facts.addObjectInput(max);
+        }
+        catch (Exception e) {
             e.printStackTrace();
         }
     }

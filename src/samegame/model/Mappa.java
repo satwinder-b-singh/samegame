@@ -51,6 +51,26 @@ public class Mappa {
 
     }
 
+    public void stampaCelleSelezionate(int riga, int colonna) {
+        boolean find = false;
+        List<Pair> celle = this.getTuttiAdiacenti2(this.getAdiacenti(riga, colonna));
+        for (int i = 0; i < RIGHE; i++) {
+            for (int j = 0; j < COLONNE; j++) {
+                for (Pair c : celle) {
+                    if (c.getI() == i && c.getJ() == j) {
+                        System.out.print("[" + this.mappa[i][j].getColore() + "] ");
+                        find = true;
+                    }
+                }
+                if (!find)
+                    System.out.print(" " + this.mappa[i][j].getColore() + "  ");
+                find = false;
+            }
+            System.out.println("");
+        }
+
+    }
+
     public Boolean haAdiacenti(int i, int j) {
 
         return this.getAdiacenti(i, j).size() > 1;
@@ -106,9 +126,20 @@ public class Mappa {
 
                 if (!this.mappa[i][j].equals(Colore.VUOTO) && this.haAdiacenti(i, j))
                     return false;
+                Colore colore = this.mappa[i][j];
             }
         }
-        System.out.println("il gioco è finito , non ci sono adiacenti");
+        if (Colore.VUOTO.equals(0)) {
+            System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+            System.out.println("!!   COMPLIMENTI HAI VINTO   !!");
+            System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+
+        }
+        else {
+            System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+            System.out.println("!!!   PECCATO HO PERSO      !!!");
+            System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        }
         this.stampaMappa();
         return true;
     }
